@@ -1,0 +1,47 @@
+﻿@model RealTimeDataPulling.Models.SampleData
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Real Time Data Sampling</h2>
+
+<div class="row">
+    <div>
+        @Html.LabelFor(m => m.CheckPoint1)
+        @Html.TextBoxFor(m => m.CheckPoint1)
+    </div>
+    <div>
+        @Html.LabelFor(m => m.CheckPoint2)
+        @Html.TextBoxFor(m => m.CheckPoint2)
+    </div>
+</div>
+
+@section scripts {
+<script type="text/javascript">
+    $(document).ready(function () {
+        var okNext = true;
+        setInterval(function () {
+            if (okNext) {
+                okNext = false;
+                $.ajax({
+                    url: window.location.origin + "/DataSource/Sample",
+                    method: "GET",
+                    success: function (data) {
+                        $("#CheckPoint1").val(data.checkPoint1);
+                        $("#CheckPoint2").val(data.checkPoint2);
+                        okNext = true;
+                    },
+                    error: function () {
+                        okNext = true;
+                    }
+                });
+            }
+        },
+        1000);
+    });
+</script>
+}
+
+
+
