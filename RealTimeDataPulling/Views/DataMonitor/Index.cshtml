@@ -20,22 +20,28 @@
 @section scripts {
 <script type="text/javascript">
     $(document).ready(function () {
-        var okNext = true;
-        setInterval(function () {
+        function myAjax(option) {
+            return new Promise((resolve, reject) => $.ajax(option).done(resolve).fail(reject));
+        }
+
+        let okNext = true;
+
+        setInterval(async function () {
             if (okNext) {
                 okNext = false;
-                $.ajax({
-                    url: window.location.origin + "/DataSource/Sample",
-                    method: "GET",
-                    success: function (data) {
-                        $("#CheckPoint1").val(data.checkPoint1);
-                        $("#CheckPoint2").val(data.checkPoint2);
-                        okNext = true;
-                    },
-                    error: function () {
-                        okNext = true;
-                    }
-                });
+                try {
+                    const data = await myAjax({
+                        url: window.location.origin + "/DataSource/Sample",
+                        method: "GET",
+                    });
+
+                    $("#CheckPoint1").val(data.checkPoint1);
+                    $("#CheckPoint2").val(data.checkPoint2);
+                }
+                catch (error) {
+                    console.error(error);
+                }
+                okNext = true;
             }
         },
         1000);
