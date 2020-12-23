@@ -35,8 +35,8 @@
                         method: "GET",
                     });
 
-                    $("#CheckPoint1").val(data.checkPoint1);
-                    $("#CheckPoint2").val(data.checkPoint2);
+                    $("#CheckPoint1").val(data.samples[0]);
+                    $("#CheckPoint2").val(data.samples[1]);
                 }
                 catch (error) {
                     console.error(error);

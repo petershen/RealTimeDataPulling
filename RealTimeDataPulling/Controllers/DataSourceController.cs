@@ -15,13 +15,8 @@ namespace RealTimeDataPulling.Controllers
         [HttpGet]
         public JsonResult Sample()
         {
-            return Json(
-                new
-                {
-                    checkPoint1 = rand.NextDouble(),
-                    checkPoint2 = rand.NextDouble()
-                },
-                JsonRequestBehavior.AllowGet);
+            double[] samples = { rand.NextDouble(), rand.NextDouble() };
+            return Json(new { samples }, JsonRequestBehavior.AllowGet);
         }
     }
 }
