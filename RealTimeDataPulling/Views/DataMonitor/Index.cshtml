@@ -16,37 +16,66 @@
         @Html.TextBoxFor(m => m.CheckPoint2)
     </div>
 </div>
+<div class="row">
+    <div id="div_g"></div>
+</div>
+@section styles {
+    <link rel="stylesheet" href="~/Content/dygraph.css" />
+}
 
 @section scripts {
-<script type="text/javascript">
-    $(document).ready(function () {
-        function myAjax(option) {
-            return new Promise((resolve, reject) => $.ajax(option).done(resolve).fail(reject));
-        }
+    <script src="~/Scripts/dygraph.js"></script>
 
-        let okNext = true;
-
-        setInterval(async function () {
-            if (okNext) {
-                okNext = false;
-                try {
-                    const data = await myAjax({
-                        url: window.location.origin + "/DataSource/Sample",
-                        method: "GET",
-                    });
-
-                    $("#CheckPoint1").val(data.samples[0]);
-                    $("#CheckPoint2").val(data.samples[1]);
-                }
-                catch (error) {
-                    console.error(error);
-                }
-                okNext = true;
+    <script type="text/javascript">
+        $(document).ready(function () {
+            let gData = [];
+            let t = new Date();
+            for (let i = 20; i >= 0; i--) {
+                let x = new Date(t.getTime() - i * 1000);
+                gData.push([x, 0.0, 0.0]);
             }
-        },
-        1000);
-    });
-</script>
+
+            var g = new Dygraph(document.getElementById("div_g"), gData,
+                {
+                    drawPoints: true,
+                    showRoller: false,
+                    valueRange: [0.0, 1.2],
+                    labels: ['Time', 'CheckPoint1', 'CheckPoint2'],
+                    xlabel: 'Time',
+                    ylabel: 'CheckPoints',
+                });
+
+            function myAjax(option) {
+                return new Promise((resolve, reject) => $.ajax(option).done(resolve).fail(reject));
+            }
+
+            let okNext = true;
+
+            setInterval(async function () {
+                if (okNext) {
+                    okNext = false;
+                    try {
+                        const data = await myAjax({
+                            url: window.location.origin + "/DataSource/Sample",
+                            method: "GET",
+                        });
+
+                        $("#CheckPoint1").val(data.samples[0]);
+                        $("#CheckPoint2").val(data.samples[1]);
+
+                        let x = new Date();
+                        gData.shift();
+                        gData.push([x, data.samples[0], data.samples[1]]);
+                        g.updateOptions({ 'file': gData });
+                    }
+                    catch (error) {
+                        console.error(error);
+                    }
+                    okNext = true;
+                }
+            }, 1000);
+        });
+    </script>
 }
 
 
